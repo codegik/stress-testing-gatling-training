@@ -23,6 +23,7 @@ import org.springframework.web.client.RestTemplate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class UserService {
@@ -42,7 +43,7 @@ public class UserService {
 	private String petResourceUrl;
 
 	private UserSort userSort = new UserSort();
-	
+
 	public Page<UserResponseDTO> find(Pageable pageable) {
 		return find(pageable, null);
 	}
@@ -58,7 +59,6 @@ public class UserService {
 				userResponseDTO.setFirstName(u.getFirstName());
 				userResponseDTO.setLastName(u.getLastName());
 				userResponseDTO.setGender(u.getGender());
-				userResponseDTO.setPets(getPets(u.getId()));
 				if(u.getFirstName() != null && u.getFirstName().toLowerCase().contains(searchString.toLowerCase())) {
 					if(!users.contains(u))
 						users.add(userResponseDTO);
@@ -94,7 +94,6 @@ public class UserService {
 				userResponseDTO.setFirstName(u.getFirstName());
 				userResponseDTO.setLastName(u.getLastName());
 				userResponseDTO.setGender(u.getGender());
-				userResponseDTO.setPets(getPets(u.getId()));
 				dtos.add(userResponseDTO);
 			}
 			return createPage(dtos, pageable);
@@ -122,18 +121,20 @@ public class UserService {
 		userResponseDTO.setPets(getPets(u.getId()));
 		return userResponseDTO;
 	}
-	
+
 	public User create(String firstName, String lastName, String email, String gender) throws UserAlreadyExistsException {
-		List<User> users = userRepository.findAll();
-		for (User u : users) {
-			if(email.equals(userRepository.findOne(u.getId()).getEmail())) {
-				throw new UserAlreadyExistsException("Duplicated email");
-			}
-			if((firstName+lastName).equals((userRepository.findOne(u.getId()).getFirstName()
-					+ userRepository.findOne(u.getId()).getLastName()))) {
-				throw new UserAlreadyExistsException("Exact username");
-			}
+		User userExists = userRepository.findByEmail(email);
+
+		if (userExists != null) {
+			throw new UserAlreadyExistsException("Duplicated email");
 		}
+
+		userExists = userRepository.findByFirstNameAndLastName(firstName, lastName);
+
+		if(userExists != null) {
+			throw new UserAlreadyExistsException("Exact username");
+		}
+
 		User user = User.builder()
 				.firstName(firstName)
 				.lastName(lastName)
@@ -153,11 +154,11 @@ public class UserService {
 				.build();
 		return userPetLinkRepository.save(userPetLink);
 	}
-	
+
 	public User update(User user) {
 		return userRepository.save(user);
 	}
-	
+
 	public void delete(Integer id) {
 		userRepository.delete(id);
 	}

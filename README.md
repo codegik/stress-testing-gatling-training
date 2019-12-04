@@ -63,3 +63,23 @@ Running the tests:
 	chmod +x target/run.sh
 	./run.sh
 ```
+
+
+Media de 5k usuário ativos das 09:00 ao meio dia e das 18:00 até as 00:00
+No resto fica 150 usuarios
+
+Usuários na base tem 100k.
+
+Temos uma campanha de divulgação da qui a duas semanas, esta sendo liberado 100 cupons, vai ser 10 cupons por dia simultaneamente.
+
+Pelo menos uns 30% de aumento de acesso ao blog.
+
+Ninguém utiliza a funcionalidade de dependentes.
+
+O serviço de usuários é o mais utilizado.
+
+A criação do usuário está lenta.
+
+Na listagem dos pets está lento.
+
+Na listagem de usuário da tela de perfil está trazendo as informações dos pets. OK
