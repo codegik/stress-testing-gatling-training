@@ -49,3 +49,6 @@ buildNumber.properties
 # Gatling
 results/
 
+build
+bin
+.cache-main
